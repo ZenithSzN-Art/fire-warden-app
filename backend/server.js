@@ -7,6 +7,7 @@ const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
 // Import routes
 const wardenRoutes = require('./routes/wardenRoutes');
 const locationRoutes = require('./routes/locationRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Initialize express app
 const app = express();
@@ -29,6 +30,7 @@ if (missingEnvVars.length > 0) {
 }
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/wardens', wardenRoutes);
 app.use('/api/locations', locationRoutes);
 

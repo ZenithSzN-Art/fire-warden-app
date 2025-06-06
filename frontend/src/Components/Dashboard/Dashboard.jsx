@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useWardens } from '../../contexts/WardenContext';
+import { authService } from '../../services/authService';
 import WardenForm from '../WardenForm/WardenForm';
 import './Dashboard.css';
 
@@ -7,6 +9,7 @@ const Dashboard = () => {
   const { wardens, loading, error, updateWarden, deleteWarden } = useWardens();
   const [selectedWarden, setSelectedWarden] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -46,10 +49,26 @@ const Dashboard = () => {
     setSelectedWarden(null);
   };
 
+  // Handle logout
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/');
+  };
+
   // Main dashboard component render
   return (
     <div className="dashboard-container">
-      <h1>Fire Wardens Dashboard</h1>
+      <div className="dashboard-header">
+        <h1>Fire Wardens Dashboard</h1>
+        <div className="header-buttons">
+          <button 
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
       
       {isEditing ? (
         <div className="edit-form-container">

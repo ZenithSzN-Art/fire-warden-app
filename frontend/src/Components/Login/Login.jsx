@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { authService } from '../../services/authService';
 import './Login.css';
 
 const Login = () => {
@@ -16,7 +17,7 @@ const Login = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -28,19 +29,18 @@ const Login = () => {
       return;
     }
 
-    // In a real app, you would call an API here
-    // For now, we'll just simulate authentication
-    setTimeout(() => {
-      // Demo credentials (remove in production and use proper auth)
-      if (formData.email === 'admin@winchester.ac.uk' && formData.password === 'password') {
-        // For demo purposes, store auth in sessionStorage
-        sessionStorage.setItem('isAuthenticated', 'true');
-        navigate('/dashboard');
-      } else {
-        setError('Invalid email or password');
-      }
+    try {
+      const response = await authService.login({
+        email: formData.email,
+        password: formData.password
+      });
+      
+      navigate('/dashboard');
+    } catch (error) {
+      setError(error.message || 'Failed to login');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -88,9 +88,6 @@ const Login = () => {
         
         <div className="login-footer">
           <p>Don't have an account? <Link to="/register">Register</Link></p>
-          <p className="demo-credentials">
-            Demo: email: admin@winchester.ac.uk, password: password
-          </p>
         </div>
       </div>
     </div>
