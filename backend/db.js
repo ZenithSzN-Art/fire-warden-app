@@ -6,28 +6,38 @@ const config = {
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    port: parseInt(process.env.DB_PORT),
+    port: parseInt(process.env.DB_PORT) || 1433,
     options: {
-        encrypt: true,
-        trustServerCertificate: true, 
+        encrypt: true, // Required for Azure SQL
+        trustServerCertificate: false, // Azure SQL uses valid certificates
+        enableArithAbort: true
     },
+    connectionTimeout: 30000, // 30 seconds (from your connection string)
+    requestTimeout: 30000,
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+    }
 };
+
+console.log("🔍 Attempting to connect to Azure SQL Database...");
+console.log("📡 Server:", process.env.DB_SERVER);
+console.log("🗄️  Database:", process.env.DB_NAME);
+console.log("👤 User:", process.env.DB_USER);
 
 const poolPromise = new sql.ConnectionPool(config)
     .connect()
     .then((pool) => {
-        console.log("Connected to SQL Server");
+        console.log("✅ Connected to Azure SQL Database successfully!");
         return pool;
     })
-    .catch(err => console.error("Database connection failed:", err));
+    .catch(err => {
+        console.error("❌ Database connection failed:", err.message);
+        return null;
+    });
 
 module.exports = {
     sql,
     poolPromise,
 };
-// This module exports the sql library and the poolPromise object, which can be used to interact with the database.
-// The poolPromise object is a promise that resolves to a connection pool, which can be used to execute SQL queries.
-// The sql library is used to create and execute SQL queries.
-// The config object contains the database connection details, which are loaded from environment variables.
-// The poolPromise object is created by calling the connect() method on a new ConnectionPool object, which is created using the config object.
-// The connect() method returns a promise that resolves to the connection pool, which is then returned by the poolPromise object.                
