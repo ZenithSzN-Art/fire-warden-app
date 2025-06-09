@@ -15,7 +15,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || 'https://your-production-frontend.azurewebsites.net'
+    ? process.env.FRONTEND_URL || 'https://yellow-stone-0d4260103.6.azurestaticapps.net'
     : 'http://localhost:5173',
   credentials: true
 }));
